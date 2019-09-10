@@ -4,7 +4,7 @@ Feature: Counter
   @scenario_outline
   Scenario Outline: Counter increases when the button is pressed
     Given I pick the colour red
-    Given I expect the "counter" to be "0"
+    Given I expect the "counters" to be "0"
     When I tap the "increment" button <tap_amount> times
     Then I expect the "counter" to be "<tap_amount>"
 
@@ -12,5 +12,5 @@ Feature: Counter
       | tap_amount |
       | 1          |
       | 2          |
-      | 5          |
-      | 10         |
+      # | 5          |
+      # | 10         |
