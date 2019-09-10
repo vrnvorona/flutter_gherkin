@@ -38,9 +38,14 @@ class FlutterWorld extends World {
   @override
   void dispose() async {
     try {
+      stdout.writeln('Disposing of world');
       _flutterRunProcessHandler = null;
       await _driver?.waitUntilNoTransientCallbacks();
       await _driver?.close();
-    } catch (_) {}
+      stdout.writeln('Disposed of world');
+    } catch (er, st) {
+      stdout.writeln('Failed to dispose of world');
+      stderr.addError(er, st);
+    }
   }
 }
