@@ -78,7 +78,14 @@ class FlutterAppRunnerHook extends Hook {
   Future<void> _restartApp() async {
     if (_flutterRunProcessHandler != null) {
       stdout.writeln("Restarting Flutter app under test");
-      await _flutterRunProcessHandler.restart();
+      try {
+        await _flutterRunProcessHandler.restart();
+        stdout.writeln("Successfully restarted Flutter app under test");
+      } catch (e, st) {
+        stderr.writeln("Failed to restarted Flutter app under test");
+        stderr.addError(e, st);
+        rethrow;
+      }
     }
   }
 
