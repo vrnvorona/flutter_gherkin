@@ -128,7 +128,7 @@ class FlutterRunProcessHandler extends ProcessHandler {
       }
     }).listen((logLine) {
       // uncomment for debug output
-      // stdout.write(logLine);
+      stdout.write(logLine);
       if (matcher.hasMatch(logLine)) {
         sub?.cancel();
         if (!completer.isCompleted) {
