@@ -24,10 +24,11 @@ dependencies:
   # gherkin: ^1.1.9
   # gherkin:
     # path: ../dart_gherkin
+  # Меняем на измененный нами dart_gherkin
   gherkin:
     git:
-      url: https://github.com/jonsamwell/dart_gherkin.git
-      ref: f0b3f955191b53a78075ed2c9387ea8bee12f111
+      url: https://github.com/vrnvorona/dart_gherkin.git
+      ref: 0066e87e7448ae49a2516fba40479989fda0cff2
       # ref: code_gen_changes
 
 dev_dependencies:
