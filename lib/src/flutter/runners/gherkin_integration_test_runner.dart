@@ -251,6 +251,7 @@ abstract class GherkinIntegrationTestRunner {
         throw GherkinStepNotDefinedException(message);
       } catch (e, st) {
         await _reporter.onException(e, st);
+        throw TestFailure(message);
       }
     }
 
