@@ -177,6 +177,13 @@ abstract class GherkinIntegrationTestRunner {
             scenarioTags,
           );
 
+          /// Тесты иногда завершаются во время анимации или во время dispose() событий
+          /// Нужно подождать немного чтобы завершить тесты аккуратно
+          final stopwatch = Stopwatch()..start();
+          while (stopwatch.elapsed < const Duration(milliseconds: 300)) {
+            await tester.pump();
+          }
+
           cleanupScenarioRun(dependencies);
         },
         timeout: scenarioExecutionTimeout,
@@ -197,7 +204,8 @@ abstract class GherkinIntegrationTestRunner {
     World world,
   ) async {
     appMainFunction(world);
-    await tester.pumpAndSettle();
+    /// Лишний памп
+    // await tester.pumpAndSettle();
   }
 
   @protected
@@ -238,7 +246,12 @@ abstract class GherkinIntegrationTestRunner {
 
     if (executable == null) {
       final message = 'Step definition not found for text: `$step`';
-      throw GherkinStepNotDefinedException(message);
+      /// Если не найден шаг, обрабатывать ошибку репортером
+      try {
+        throw GherkinStepNotDefinedException(message);
+      } catch (e, st) {
+        await _reporter.onException(e, st);
+      }
     }
 
     var parameters = _getStepParameters(

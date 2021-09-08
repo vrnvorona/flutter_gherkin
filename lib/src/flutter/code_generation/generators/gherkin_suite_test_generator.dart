@@ -9,8 +9,7 @@ import 'package:source_gen/source_gen.dart';
 
 class NoOpReporter extends Reporter {}
 
-class GherkinSuiteTestGenerator
-    extends GeneratorForAnnotation<GherkinTestSuite> {
+class GherkinSuiteTestGenerator extends GeneratorForAnnotation<GherkinTestSuite> {
   static const String TEMPLATE = '''
 class _CustomGherkinIntegrationTestRunner extends GherkinIntegrationTestRunner {
   _CustomGherkinIntegrationTestRunner(
@@ -45,25 +44,22 @@ void executeTestSuite(
     _languageService.initialise(
       annotation.read('featureDefaultLanguage').literalValue.toString(),
     );
-    final executionOrder = ExecutionOrder.values[annotation
-        .read('executionOrder')
-        .objectValue
-        .getField('index')
-        .toIntValue()];
+    final executionOrder = ExecutionOrder
+        .values[annotation.read('executionOrder').objectValue.getField('index').toIntValue()];
     final featureFiles = annotation
         .read('featurePaths')
         .listValue
         .map((path) => Glob(path.toStringValue()))
-        .map(
-          (glob) => glob
-              .listSync()
-              .map((entity) => File(entity.path).readAsStringSync())
-              .toList(),
-        )
-        .reduce((value, element) => value..addAll(element));
+        .map((glob) {
+      /// убираем рандомность при чтении файлов на macos
+      var glob1 = glob.listSync();
+      glob1.sort((FileSystemEntity a, FileSystemEntity b) => a.path.compareTo(b.path));
+      return glob1.map((entity) => File(entity.path).readAsStringSync()).toList();
+    }).reduce((value, element) => value..addAll(element));
 
     if (executionOrder == ExecutionOrder.random) {
-      featureFiles..shuffle();
+      /// Убираем рандомность принудительно
+      // featureFiles..shuffle();
     }
 
     final featureExecutionFunctionsBuilder = StringBuffer();
@@ -82,8 +78,7 @@ void executeTestSuite(
     }
 
     return TEMPLATE
-        .replaceAll('{{feature_functions}}',
-            featureExecutionFunctionsBuilder.toString())
+        .replaceAll('{{feature_functions}}', featureExecutionFunctionsBuilder.toString())
         .replaceAll(
           '{{features_to_execute}}',
           List.generate(
@@ -179,8 +174,7 @@ class FeatureFileTestGeneratorVisitor extends FeatureFileVisitor {
     String description,
     Iterable<String> tags,
   ) async {
-    _currentFeatureCode =
-        _replaceVariable(FUNCTION_TEMPLATE, 'feature_number', _id.toString());
+    _currentFeatureCode = _replaceVariable(FUNCTION_TEMPLATE, 'feature_number', _id.toString());
     _currentFeatureCode = _replaceVariable(
       _currentFeatureCode,
       'feature_name',
